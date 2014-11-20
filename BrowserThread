@@ -1,0 +1,60 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package benz;
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+
+/**
+ *
+ * @author BiG
+ */
+public class BrowserThread extends Thread {
+
+    private JTextField url;
+    private JEditorPane display;
+    private JTextPane showStatus;
+    private String threadName;
+
+    public BrowserThread(JTextField url, JEditorPane display, JTextPane showStatus, String threadName) {
+        this.url = url;
+        this.display = display;
+        this.showStatus = showStatus;
+        this.threadName = threadName;
+    }
+
+    @Override
+    public void run() {
+        String txt = "";
+        txt += "Thread " + threadName + " : Start";
+        showStatus.setText(txt);
+        try {
+
+            display.setPage(url.getText());
+            URL obj = new URL(url.getText());
+            txt += "\nThread " + threadName + " : Get page URL = " + url;
+            URLConnection conn = obj.openConnection();
+            Map<String, List<String>> map = conn.getHeaderFields();
+            txt += "\nThread " + threadName + " : Printing Response Header...";
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                txt += "\nThread " + threadName + " : " + entry.getKey() + ", " + entry.getValue();
+            }
+            showStatus.setText(txt);
+
+        } catch (IOException ex) {
+            Logger.getLogger(BrowserThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        txt += "\nThread " + threadName + " : Stop";
+        showStatus.setText(txt);
+    }
+
+}
